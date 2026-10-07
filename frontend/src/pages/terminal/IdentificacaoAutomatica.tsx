@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ApiError, registerPunch } from '../../api'
+import { terminal } from '../../config/terminal'
+import { useCamera } from '../../hooks/useCamera'
 import TerminalLayout from '../../components/terminal/TerminalLayout'
 import CameraView from '../../components/terminal/CameraView'
 import Notice from '../../components/terminal/Notice'
-import cameraPreview from '../../assets/images/camera-preview.jpg'
 import dotCamera from '../../assets/icons/dot-camera.svg'
 import faceGuide from '../../assets/icons/face-guide.svg'
 import scanFaceCamera from '../../assets/icons/scan-face-camera.svg'
@@ -13,8 +15,19 @@ import handIcon from '../../assets/icons/hand.svg'
 import focusIcon from '../../assets/icons/focus.svg'
 import infoIcon from '../../assets/icons/info-22.svg'
 
-/** Tempo simulado até o reconhecimento facial no protótipo. */
-const SIMULATED_RECOGNITION_MS = 5000
+/** Intervalo entre leituras enquanto ninguém é identificado. */
+const SCAN_INTERVAL_MS = 1500
+/** Pausa após um aviso (sem conexão, registros do dia completos) antes de ler de novo. */
+const NOTICE_PAUSE_MS = 5000
+
+type Waiting = { title: string; description: string; warning?: boolean }
+
+const idle: Waiting = {
+  title: 'Aguardando identificação',
+  description: 'O registro será feito automaticamente.',
+}
+
+const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 
 const steps = [
   {
@@ -33,25 +46,82 @@ const steps = [
 
 export default function IdentificacaoAutomatica() {
   const navigate = useNavigate()
+  const { videoRef, status: cameraStatus, capture } = useCamera()
+  const [waiting, setWaiting] = useState(idle)
+  const [online, setOnline] = useState(true)
 
+  // Envia um quadro por vez ao backend até alguém ser identificado.
   useEffect(() => {
-    const id = window.setTimeout(() => {
-      navigate('/ponto/confirmado', { state: { registeredAt: new Date().toISOString() } })
-    }, SIMULATED_RECOGNITION_MS)
-    return () => window.clearTimeout(id)
-  }, [navigate])
+    if (cameraStatus !== 'ready') return
+    let active = true
+
+    const scan = async () => {
+      while (active) {
+        const image = await capture()
+        if (!image) {
+          await sleep(SCAN_INTERVAL_MS)
+          continue
+        }
+
+        try {
+          const punch = await registerPunch(image, terminal.name, terminal.location)
+          if (!active) return
+          navigate('/ponto/confirmado', { state: { punch } })
+          return
+        } catch (error) {
+          if (!active) return
+          const status = error instanceof ApiError ? error.status : 0
+          if (status === 404) {
+            navigate('/ponto/nao-reconhecido')
+            return
+          }
+
+          setOnline(status !== 0)
+          if (status === 422) {
+            // Nenhum rosto na imagem: continua tentando.
+            setWaiting(idle)
+            await sleep(SCAN_INTERVAL_MS)
+            continue
+          }
+
+          setWaiting({
+            title: status === 409 ? 'Registros de hoje concluídos' : 'Não foi possível registrar',
+            description: error instanceof Error ? error.message : 'Tente novamente.',
+            warning: true,
+          })
+          await sleep(NOTICE_PAUSE_MS)
+          if (active) setWaiting(idle)
+        }
+      }
+    }
+
+    void scan()
+    return () => {
+      active = false
+    }
+  }, [cameraStatus, capture, navigate])
+
+  const cameraUnavailable = cameraStatus === 'error'
+  const current: Waiting = cameraUnavailable
+    ? {
+        title: 'Câmera indisponível',
+        description: 'Permita o acesso à câmera neste navegador e recarregue a página.',
+        warning: true,
+      }
+    : waiting
 
   return (
     <TerminalLayout
+      online={online}
       title="Registre seu ponto com o rosto"
       subtitle="Sem matrícula, sem senha. Basta olhar para a câmera e aguardar a confirmação."
     >
       <div className="terminal-grid">
         <div className="capture">
           <CameraView
-            preview={cameraPreview}
+            videoRef={videoRef}
             statusIcon={dotCamera}
-            statusLabel="Câmera ativa"
+            statusLabel={cameraUnavailable ? 'Câmera indisponível' : 'Câmera ativa'}
             instructionIcon={scanFaceCamera}
             instruction="Mantenha o rosto dentro da marcação"
             caption="Captura automática"
@@ -90,11 +160,11 @@ export default function IdentificacaoAutomatica() {
             ))}
           </ol>
 
-          <div className="waiting" role="status">
+          <div className={`waiting ${current.warning ? 'waiting--warning' : ''}`} role="status">
             <img className="waiting__icon" src={focusIcon} alt="" />
             <div>
-              <p className="waiting__title">Aguardando identificação</p>
-              <p className="waiting__description">O registro será feito automaticamente.</p>
+              <p className="waiting__title">{current.title}</p>
+              <p className="waiting__description">{current.description}</p>
             </div>
           </div>
         </aside>

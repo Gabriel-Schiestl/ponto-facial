@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import type { Punch } from '../../api'
+import { useCamera } from '../../hooks/useCamera'
+import Avatar from '../../components/Avatar'
 import TerminalLayout from '../../components/terminal/TerminalLayout'
 import CameraView from '../../components/terminal/CameraView'
 import Notice from '../../components/terminal/Notice'
 import { formatLongDate, formatTimeWithSeconds } from '../../hooks/useNow'
-import cameraPreview from '../../assets/images/camera-preview.jpg'
-import anaSouza from '../../assets/images/ana-souza-64.jpg'
 import dotCameraSuccess from '../../assets/icons/dot-camera-success.svg'
 import dotSuccess from '../../assets/icons/dot-success.svg'
 import faceGuideSuccess from '../../assets/icons/face-guide-success.svg'
@@ -19,19 +20,21 @@ import timerIcon from '../../assets/icons/timer.svg'
 
 const RETURN_SECONDS = 5
 
-const pad = (value: number) => String(value).padStart(2, '0')
-
 export default function RegistroConfirmado() {
-  const navigate = useNavigate()
   const location = useLocation()
+  const punch = (location.state as { punch?: Punch } | null)?.punch
+
+  // Sem registro (acesso direto ou recarga da página), volta para a leitura.
+  if (!punch) return <Navigate to="/ponto" replace />
+  return <Confirmacao punch={punch} />
+}
+
+function Confirmacao({ punch }: { punch: Punch }) {
+  const navigate = useNavigate()
+  const { videoRef } = useCamera()
   const [secondsLeft, setSecondsLeft] = useState(RETURN_SECONDS)
-
-  const [registeredAt] = useState(() => {
-    const iso = (location.state as { registeredAt?: string } | null)?.registeredAt
-    return iso ? new Date(iso) : new Date()
-  })
-
-  const receiptNumber = `${registeredAt.getFullYear()}${pad(registeredAt.getMonth() + 1)}${pad(registeredAt.getDate())}-00142`
+  const { employee } = punch
+  const registeredAt = new Date(punch.registeredAt)
 
   useEffect(() => {
     if (secondsLeft <= 0) {
@@ -50,7 +53,7 @@ export default function RegistroConfirmado() {
       <div className="terminal-grid">
         <div className="capture">
           <CameraView
-            preview={cameraPreview}
+            videoRef={videoRef}
             statusIcon={dotCameraSuccess}
             statusLabel="Identificação concluída"
             instructionIcon={shieldCheckCamera}
@@ -60,7 +63,7 @@ export default function RegistroConfirmado() {
             <img className="camera__guide" src={faceGuideSuccess} alt="" />
             <div className="camera__recognized">
               <img src={checkWhite} alt="" />
-              Ana Souza reconhecida
+              {employee.name}
             </div>
           </CameraView>
 
@@ -84,27 +87,36 @@ export default function RegistroConfirmado() {
             <div>
               <h2 className="panel__title">Ponto registrado</h2>
               <p className="panel__result-detail panel__result-detail--success">
-                Tudo certo com seu registro.
+                {punch.duplicate
+                  ? 'Este registro já havia sido feito há instantes.'
+                  : 'Tudo certo com seu registro.'}
               </p>
             </div>
           </div>
           <div className="divider" />
 
           <div className="employee">
-            <img className="employee__photo" src={anaSouza} alt="Foto de Ana Souza" />
+            <Avatar
+              className="employee__photo"
+              name={employee.name}
+              photo={employee.photo}
+              alt={`Foto de ${employee.name}`}
+            />
             <div className="employee__data">
-              <p className="employee__name">Ana Souza</p>
-              <p className="employee__meta">HT-001 · Produto</p>
-              <p className="employee__meta">Designer de produto</p>
+              <p className="employee__name">{employee.name}</p>
+              <p className="employee__meta">
+                {employee.id} · {employee.department}
+              </p>
+              <p className="employee__meta">{employee.role}</p>
             </div>
           </div>
 
           <div className="punch">
             <div className="punch__type">
               <span>Tipo de registro</span>
-              <span className="pill pill--primary">Entrada</span>
+              <span className="pill pill--primary">{punch.typeLabel}</span>
             </div>
-            <time className="punch__time" dateTime={registeredAt.toISOString()}>
+            <time className="punch__time" dateTime={punch.registeredAt}>
               {formatTimeWithSeconds(registeredAt)}
             </time>
             <div className="punch__date">
@@ -114,10 +126,12 @@ export default function RegistroConfirmado() {
           </div>
 
           <div className="receipt">
-            <span>Comprovante nº {receiptNumber}</span>
+            <span>Comprovante nº {punch.receipt}</span>
             <img src={shieldCheckSuccess} alt="" />
           </div>
-          <p className="receipt">São Paulo · Recepção · Terminal 01</p>
+          <p className="receipt">
+            {[punch.location, punch.terminal].filter(Boolean).join(' · ')}
+          </p>
         </aside>
       </div>
 
