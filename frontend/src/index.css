@@ -1,0 +1,195 @@
+@import './styles/terminal.css';
+@import './styles/admin.css';
+
+:root {
+  /* Marca */
+  --color-primary: #126678;
+  --color-primary-soft: #e8f3f5;
+
+  /* Texto */
+  --color-text: #172e3b;
+  --color-text-muted: #637682;
+  --color-text-placeholder: #90a0aa;
+
+  /* Superfícies */
+  --color-bg: #f3f6f8;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8fafb;
+  --color-border: #dfe7ec;
+
+  /* Estados */
+  --color-success: #237c61;
+  --color-success-soft: #eaf5ef;
+  --color-warning: #a86623;
+  --color-warning-soft: #fff4e5;
+
+  /* Navegação administrativa */
+  --color-nav-bg: #122d3a;
+  --color-nav-active: #244753;
+  --color-nav-muted: #9bb4bf;
+  --color-nav-border: #42606b;
+
+  /* Câmera */
+  --color-camera-bg: #152e39;
+  --color-camera-empty: #17333f;
+  --color-camera-contrast: rgba(10, 38, 53, 0.19);
+  --color-camera-chip: rgba(18, 46, 59, 0.85);
+  --color-camera-button: rgba(18, 46, 59, 0.67);
+  --color-camera-bar: rgba(16, 44, 60, 0.92);
+  --color-camera-caption: #b4cfd9;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 100px;
+
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1200px;
+}
+
+p,
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+img {
+  display: block;
+  flex-shrink: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* ---------- Pílula de status ---------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.pill--primary {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.pill--success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.pill--warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.pill--neutral {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Botões ---------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.button:hover {
+  background: var(--color-surface-subtle);
+  border-color: #cdd8de;
+}
+
+.button--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.button--primary:hover {
+  background: #0f5767;
+  border-color: #0f5767;
+}
+
+.button--block {
+  width: 100%;
+}
+
+.button--icon {
+  width: 44px;
+  padding: 0;
+}
+
+.button:focus-visible,
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Divisores ---------- */
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.divider--vertical {
+  width: 1px;
+  height: 28px;
+}

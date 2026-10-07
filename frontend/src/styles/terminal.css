@@ -1,0 +1,602 @@
+/* ==========================================================
+   Terminal público de ponto
+   ========================================================== */
+
+.terminal {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+/* ---------- Marca ---------- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand__symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--color-primary);
+}
+
+.brand__name {
+  font-size: 23px;
+  font-weight: 700;
+  line-height: normal;
+  color: var(--color-text);
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88px;
+  padding: 0 56px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.terminal-header__product {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.terminal-header__unit {
+  white-space: nowrap;
+}
+
+.terminal-header__company {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.terminal-header__location {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.terminal-header__connection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ---------- Conteúdo ---------- */
+
+.terminal-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px 56px 32px;
+}
+
+.terminal-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.terminal-intro__text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 870px;
+}
+
+.terminal-intro__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.terminal-intro__title {
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.terminal-intro__subtitle {
+  font-size: 16px;
+  color: var(--color-text-muted);
+}
+
+.terminal-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.terminal-clock__time {
+  font-size: 48px;
+  font-weight: 500;
+  line-height: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.terminal-clock__date {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.terminal-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 824fr) minmax(0, 472fr);
+  gap: 32px;
+  align-items: start;
+}
+
+/* ---------- Câmera ---------- */
+
+.capture {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.camera {
+  position: relative;
+  height: 512px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-camera-bg);
+}
+
+.camera--empty {
+  background: var(--color-camera-empty);
+}
+
+.camera__preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera__contrast {
+  position: absolute;
+  inset: 0;
+  background: var(--color-camera-contrast);
+}
+
+.camera__status {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-camera-chip);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.camera__capture {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--color-camera-button);
+}
+
+.camera__guide {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.camera__placeholder {
+  position: absolute;
+  top: 164px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.camera__recognized {
+  position: absolute;
+  top: 358px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.camera__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--color-camera-bar);
+}
+
+.camera__instruction {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.camera__caption {
+  font-size: 12px;
+  color: var(--color-camera-caption);
+  white-space: nowrap;
+}
+
+.capture__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.capture__hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ---------- Painel lateral ---------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 512px;
+  padding: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.panel--roomy {
+  gap: 24px;
+  padding: 32px;
+}
+
+.panel__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel__title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.panel__subtitle {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.panel__result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel__result-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.panel__result-symbol--success {
+  background: var(--color-success-soft);
+}
+
+.panel__result-symbol--warning {
+  background: var(--color-warning-soft);
+}
+
+.panel__result-detail {
+  font-size: 12px;
+}
+
+.panel__result-detail--success {
+  color: var(--color-success);
+}
+
+.panel__result-detail--warning {
+  color: var(--color-warning);
+}
+
+.panel__help {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Etapas */
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.step__marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step__text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.step__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.step__description {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.waiting__icon {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.waiting__title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.waiting__description {
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Funcionário reconhecido */
+
+.employee {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.employee__photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.employee__data {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.employee__name {
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.employee__meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.punch {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.punch__type {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.punch__time {
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.punch__date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.receipt {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Recomendações */
+
+.recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Faixa de mensagem ---------- */
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: var(--radius-md);
+}
+
+.notice--primary {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.notice--success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.notice--warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.notice__message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notice__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.notice__description {
+  font-size: 13px;
+}
+
+.notice__aside {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Rodapé ---------- */
+
+.terminal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 56px;
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.terminal-footer__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-footer__link {
+  font-weight: 600;
+  color: var(--color-primary);
+}
