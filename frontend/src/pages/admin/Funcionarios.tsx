@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { departments, employees, employeeTotals } from '../../data/employees'
+import { getEmployeeTotals, listEmployees, type EmployeePage, type EmployeeTotals } from '../../api'
+import { departments } from '../../data/employees'
+import Avatar from '../../components/Avatar'
 import plusIcon from '../../assets/icons/plus.svg'
 import usersIcon from '../../assets/icons/users.svg'
 import userCheck from '../../assets/icons/user-check.svg'
@@ -15,46 +17,91 @@ import chevronLeft from '../../assets/icons/chevron-left.svg'
 import chevronRight16 from '../../assets/icons/chevron-right-16.svg'
 import infoIcon from '../../assets/icons/info-16.svg'
 
-const stats = [
+const PAGE_SIZE = 10
+/** Espera após a digitação antes de buscar. */
+const SEARCH_DELAY_MS = 300
+
+const buildStats = (totals: EmployeeTotals | null) => [
   {
     label: 'Funcionários cadastrados',
-    value: employeeTotals.registered,
+    value: totals?.registered ?? '–',
     detail: 'Toda a equipe em um só lugar',
     icon: usersIcon,
   },
   {
     label: 'Funcionários ativos',
-    value: employeeTotals.active,
-    detail: `${employeeTotals.inactive} cadastros inativos`,
+    value: totals?.active ?? '–',
+    detail: `${totals?.inactive ?? 0} cadastros inativos`,
     icon: userCheck,
   },
   {
     label: 'Identificação facial configurada',
-    value: employeeTotals.faceConfigured,
-    detail: `${employeeTotals.facePending} funcionários com cadastro pendente`,
+    value: totals?.faceConfigured ?? '–',
+    detail: `${totals?.facePending ?? 0} funcionários com cadastro pendente`,
     icon: scanFace20,
   },
 ]
 
-const pages = ['1', '2', '3', '…', '8']
+/** Páginas exibidas na paginação: primeira, última e vizinhas da atual. */
+function pageItems(current: number, last: number): (number | '…')[] {
+  const items: (number | '…')[] = []
+  for (let page = 1; page <= last; page++) {
+    if (page === 1 || page === last || Math.abs(page - current) <= 1) items.push(page)
+    else if (items[items.length - 1] !== '…') items.push('…')
+  }
+  return items
+}
 
 export default function Funcionarios() {
   const [query, setQuery] = useState('')
+  const [search, setSearch] = useState('')
   const [department, setDepartment] = useState('')
   const [status, setStatus] = useState('')
-  const [page, setPage] = useState('1')
+  const [page, setPage] = useState(1)
+  const [result, setResult] = useState<EmployeePage | null>(null)
+  const [totals, setTotals] = useState<EmployeeTotals | null>(null)
+  const [error, setError] = useState('')
 
-  const visible = useMemo(() => {
-    const term = query.trim().toLowerCase()
-    return employees.filter(
-      (employee) =>
-        (!term ||
-          employee.name.toLowerCase().includes(term) ||
-          employee.id.toLowerCase().includes(term)) &&
-        (!department || employee.department === department) &&
-        (!status || employee.status === status),
+  useEffect(() => {
+    const id = window.setTimeout(() => setSearch(query.trim()), SEARCH_DELAY_MS)
+    return () => window.clearTimeout(id)
+  }, [query])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    getEmployeeTotals(controller.signal)
+      .then(setTotals)
+      .catch(() => {})
+    return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    listEmployees(
+      { busca: search, departamento: department, status, pagina: page, porPagina: PAGE_SIZE },
+      controller.signal,
     )
-  }, [query, department, status])
+      .then((data) => {
+        setResult(data)
+        setError('')
+      })
+      .catch((reason) => {
+        if (!controller.signal.aborted) setError(reason.message)
+      })
+    return () => controller.abort()
+  }, [search, department, status, page])
+
+  // Qualquer mudança de filtro volta para a primeira página.
+  const changeFilter = (setter: (value: string) => void) => (value: string) => {
+    setter(value)
+    setPage(1)
+  }
+
+  const visible = result?.items ?? []
+  const total = result?.total ?? 0
+  const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const firstShown = (page - 1) * PAGE_SIZE + 1
+  const stats = buildStats(totals)
 
   return (
     <main className="admin-content">
@@ -94,7 +141,7 @@ export default function Funcionarios() {
               type="search"
               placeholder="Buscar por nome ou matrícula"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => changeFilter(setQuery)(event.target.value)}
               aria-label="Buscar por nome ou matrícula"
             />
           </label>
@@ -103,7 +150,7 @@ export default function Funcionarios() {
             <img src={chevronDown18} alt="" />
             <select
               value={department}
-              onChange={(event) => setDepartment(event.target.value)}
+              onChange={(event) => changeFilter(setDepartment)(event.target.value)}
               aria-label="Departamento"
             >
               <option value="">Todos os departamentos</option>
@@ -119,7 +166,7 @@ export default function Funcionarios() {
             <img src={chevronDown18} alt="" />
             <select
               value={status}
-              onChange={(event) => setStatus(event.target.value)}
+              onChange={(event) => changeFilter(setStatus)(event.target.value)}
               aria-label="Status"
             >
               <option value="">Todos os status</option>
@@ -146,7 +193,7 @@ export default function Funcionarios() {
           {visible.map((employee) => (
             <div key={employee.id} className="table__row" role="row">
               <div className="identity" role="cell">
-                <img className="identity__photo" src={employee.photo} alt="" />
+                <Avatar className="identity__photo" name={employee.name} photo={employee.photo} />
                 <div className="cell-stack">
                   <span className="identity__name">{employee.name}</span>
                   <span className="identity__id">{employee.id}</span>
@@ -192,24 +239,35 @@ export default function Funcionarios() {
             </div>
           ))}
 
-          {visible.length === 0 && (
-            <p className="table__empty">Nenhum funcionário encontrado com os filtros atuais.</p>
+          {error ? (
+            <p className="table__empty">{error}</p>
+          ) : (
+            result &&
+            visible.length === 0 && (
+              <p className="table__empty">Nenhum funcionário encontrado com os filtros atuais.</p>
+            )
           )}
         </div>
 
         <div className="pagination">
           <span>
             {visible.length > 0
-              ? `Mostrando 1–${visible.length} de ${employeeTotals.registered} funcionários`
-              : `Mostrando 0 de ${employeeTotals.registered} funcionários`}
+              ? `Mostrando ${firstShown}–${firstShown + visible.length - 1} de ${total} funcionários`
+              : `Mostrando 0 de ${total} funcionários`}
           </span>
           <div className="pagination__pages">
-            <button type="button" className="icon-button focus-ring" aria-label="Página anterior">
+            <button
+              type="button"
+              className="icon-button focus-ring"
+              aria-label="Página anterior"
+              disabled={page <= 1}
+              onClick={() => setPage(page - 1)}
+            >
               <img src={chevronLeft} alt="" />
             </button>
-            {pages.map((item) =>
+            {pageItems(page, lastPage).map((item, index) =>
               item === '…' ? (
-                <span key={item} className="pagination__page">
+                <span key={`gap-${index}`} className="pagination__page">
                   …
                 </span>
               ) : (
@@ -224,7 +282,13 @@ export default function Funcionarios() {
                 </button>
               ),
             )}
-            <button type="button" className="icon-button focus-ring" aria-label="Próxima página">
+            <button
+              type="button"
+              className="icon-button focus-ring"
+              aria-label="Próxima página"
+              disabled={page >= lastPage}
+              onClick={() => setPage(page + 1)}
+            >
               <img src={chevronRight16} alt="" />
             </button>
           </div>
