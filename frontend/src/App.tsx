@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminLayout from './components/admin/AdminLayout'
 import Funcionarios from './pages/admin/Funcionarios'
 import CadastroFuncionario from './pages/admin/CadastroFuncionario'
+import RegistrosPonto from './pages/admin/RegistrosPonto'
 import IdentificacaoAutomatica from './pages/terminal/IdentificacaoAutomatica'
 import RegistroConfirmado from './pages/terminal/RegistroConfirmado'
 import FaceNaoReconhecida from './pages/terminal/FaceNaoReconhecida'
@@ -15,6 +16,7 @@ function App() {
         <Route index element={<Navigate to="funcionarios" replace />} />
         <Route path="funcionarios" element={<Funcionarios />} />
         <Route path="funcionarios/novo" element={<CadastroFuncionario />} />
+        <Route path="registros" element={<RegistrosPonto />} />
       </Route>
 
       <Route path="/ponto" element={<IdentificacaoAutomatica />} />

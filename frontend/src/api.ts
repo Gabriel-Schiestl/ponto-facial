@@ -112,3 +112,7 @@ export const registerPunch = (image: Blob, terminal: string, local: string) =>
     method: 'POST',
     body: imageForm({ imagem: image, terminal, local }),
   })
+
+/** Registros de ponto de um dia (`AAAA-MM-DD`; padrão no backend: hoje). */
+export const listPunches = (data: string, signal?: AbortSignal) =>
+  request<Punch[]>(`/api/pontos?${new URLSearchParams({ data })}`, { signal })
