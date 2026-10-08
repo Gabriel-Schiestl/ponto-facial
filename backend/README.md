@@ -5,15 +5,21 @@ facial com [DeepFace](https://github.com/serengil/deepface) (modelo Facenet512).
 
 ## Executar
 
-Requer Python 3.10–3.13 (o TensorFlow ainda não publica pacotes para 3.14).
+Para subir backend e frontend juntos, use `./start.sh` na raiz do projeto: ele instala
+as dependências, baixa os modelos do DeepFace e só então inicia a API (porta 8000) e o
+frontend (porta 5173), conferindo a comunicação entre eles.
+
+Manualmente, requer Python 3.10–3.13 (o TensorFlow ainda não publica pacotes para 3.14).
 
 ```bash
 uv venv -p 3.12 && source .venv/bin/activate
 uv pip install -r requirements.txt
+python -m app.setup   # baixa os pesos do modelo e do detector
 uvicorn app.main:app --reload --port 8000
 ```
 
-Na primeira execução o DeepFace baixa os pesos do modelo e do detector para `~/.deepface`.
+Os pesos ficam em `~/.deepface/weights`. Sem o `app.setup`, o download acontece na
+inicialização da API e a porta só abre quando ele termina.
 A documentação interativa fica em http://localhost:8000/docs.
 
 Dados (SQLite e fotos) ficam em `backend/data/`.

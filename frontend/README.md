@@ -4,7 +4,7 @@ Frontend em React + TypeScript (Vite) do sistema de ponto por identificação fa
 
 ## Rodando
 
-Suba o backend na porta 8000 (veja `backend/README.md`) e então:
+Na raiz do projeto, `./start.sh` prepara e sobe backend e frontend juntos. Para rodar só o frontend, suba o backend na porta 8000 (veja `backend/README.md`) e então:
 
 ```bash
 npm install

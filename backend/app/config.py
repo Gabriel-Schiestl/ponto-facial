@@ -8,7 +8,7 @@ PHOTOS_DIR = DATA_DIR / "fotos"
 
 DATABASE_URL = os.getenv("PONTO_DATABASE_URL", f"sqlite:///{DATA_DIR / 'ponto.db'}")
 
-CORS_ORIGINS = os.getenv("PONTO_CORS_ORIGINS", "http://localhost:5173").split(",")
+CORS_ORIGINS = os.getenv("PONTO_CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
 
 TIMEZONE = ZoneInfo(os.getenv("PONTO_TIMEZONE", "America/Sao_Paulo"))
 
