@@ -162,9 +162,11 @@ def identify(image: np.ndarray, candidates: dict[str, list[float]]) -> tuple[str
     Retorna (matrícula, distância) do funcionário mais próximo dentro do
     limiar, ou None quando ninguém é reconhecido.
     """
+    # Detecta antes de olhar os candidatos: imagem sem rosto é FaceError (422),
+    # "não reconhecido" (404), mesmo sem ninguém cadastrado.
+    face = max(detect_faces(image), key=lambda f: f.area["w"] * f.area["h"])
     if not candidates:
         return None
-    face = max(detect_faces(image), key=lambda f: f.area["w"] * f.area["h"])
 
     ids = list(candidates)
     matrix = np.stack([_normalize(candidates[i]) for i in ids])
