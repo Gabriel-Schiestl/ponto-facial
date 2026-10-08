@@ -165,6 +165,12 @@ a {
   border-color: #0f5767;
 }
 
+.button:disabled {
+  opacity: 0.6;
+  cursor: default;
+  pointer-events: none;
+}
+
 .button--block {
   width: 100%;
 }
@@ -192,4 +198,15 @@ a {
 .divider--vertical {
   width: 1px;
   height: 28px;
+}
+
+/* Funcionário sem foto cadastrada */
+.avatar-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
 }

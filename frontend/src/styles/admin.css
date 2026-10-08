@@ -19,6 +19,11 @@
   cursor: pointer;
 }
 
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 /* ---------- Navegação lateral ---------- */
 
 .sidebar {
@@ -779,4 +784,88 @@ button.pagination__page:hover {
 .form-actions__buttons {
   display: flex;
   gap: 12px;
+}
+
+/* Captura pela câmera (foto de cadastro e identificação facial) */
+
+.camera-capture {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.camera-capture__frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-camera-bg);
+}
+
+.camera-capture__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.camera-capture__status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+}
+
+.button__icon--inverted {
+  filter: brightness(0) invert(1);
+}
+
+/* Estados da captura facial */
+
+.photo__placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  background: var(--color-border);
+}
+
+.quality--pending {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+.quality--warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+/* Erro ao salvar */
+
+.form-error {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Registros de ponto */
+
+.search--date {
+  flex: 0 0 auto;
+}
+
+.search--date input {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.table--punches .table__row {
+  grid-template-columns: minmax(0, 1fr) 190px 110px 150px 170px;
 }

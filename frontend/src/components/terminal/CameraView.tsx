@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, Ref } from 'react'
 import videoIcon from '../../assets/icons/video.svg'
 
 type CameraViewProps = {
-  /** Imagem da câmera; quando ausente, exibe o fundo escuro sem imagem. */
-  preview?: string
+  /** Vídeo ao vivo da câmera; quando ausente, exibe o fundo escuro sem imagem. */
+  videoRef?: Ref<HTMLVideoElement>
   statusIcon: string
   statusLabel: string
   instructionIcon: string
@@ -14,7 +14,7 @@ type CameraViewProps = {
 }
 
 export default function CameraView({
-  preview,
+  videoRef,
   statusIcon,
   statusLabel,
   instructionIcon,
@@ -23,10 +23,16 @@ export default function CameraView({
   children,
 }: CameraViewProps) {
   return (
-    <div className={`camera ${preview ? '' : 'camera--empty'}`}>
-      {preview && (
+    <div className={`camera ${videoRef ? '' : 'camera--empty'}`}>
+      {videoRef && (
         <>
-          <img className="camera__preview" src={preview} alt="" />
+          <video
+            ref={videoRef}
+            className="camera__preview camera__preview--mirrored"
+            autoPlay
+            muted
+            playsInline
+          />
           <div className="camera__contrast" />
         </>
       )}

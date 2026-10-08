@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import scanFaceLogo from '../../assets/icons/scan-face-logo-dark.svg'
 import layoutDashboard from '../../assets/icons/layout-dashboard.svg'
 import usersNav from '../../assets/icons/users-nav.svg'
@@ -21,6 +21,9 @@ const menu = [
 ]
 
 export default function AdminLayout() {
+  const { pathname } = useLocation()
+  const current = menu.find((item) => pathname.startsWith(item.to))
+
   return (
     <div className="admin">
       <nav className="sidebar" aria-label="Navegação administrativa">
@@ -75,7 +78,7 @@ export default function AdminLayout() {
           <div className="breadcrumb">
             <span>Administração</span>
             <img src={chevronRight} alt="" />
-            <span className="breadcrumb__current">Funcionários</span>
+            <span className="breadcrumb__current">{current?.label}</span>
           </div>
 
           <div className="account">

@@ -1,18 +1,27 @@
 import type { ReactNode } from 'react'
+import { terminal } from '../../config/terminal'
 import { formatTime, formatWeekdayDate, useNow } from '../../hooks/useNow'
 import scanFaceBrand from '../../assets/icons/scan-face-brand.svg'
 import dotSuccess from '../../assets/icons/dot-success.svg'
+import dotWarning from '../../assets/icons/dot-warning.svg'
 import shieldCheck from '../../assets/icons/shield-check-16.svg'
 import circleHelp from '../../assets/icons/circle-help-16.svg'
 
 type TerminalLayoutProps = {
   title: string
   subtitle: string
+  /** Falso quando a última chamada ao servidor falhou por falta de conexão. */
+  online?: boolean
   children: ReactNode
 }
 
 /** Estrutura comum das telas do terminal público de ponto. */
-export default function TerminalLayout({ title, subtitle, children }: TerminalLayoutProps) {
+export default function TerminalLayout({
+  title,
+  subtitle,
+  online = true,
+  children,
+}: TerminalLayoutProps) {
   const now = useNow()
 
   return (
@@ -28,16 +37,23 @@ export default function TerminalLayout({ title, subtitle, children }: TerminalLa
           <span className="divider divider--vertical" />
           <div className="terminal-header__unit">
             <p className="terminal-header__company">Horizonte Tecnologia</p>
-            <p className="terminal-header__location">São Paulo · Recepção</p>
+            <p className="terminal-header__location">{terminal.location}</p>
           </div>
         </div>
 
         <div className="terminal-header__connection">
-          <span className="pill pill--success">
-            <img src={dotSuccess} alt="" />
-            Terminal conectado
-          </span>
-          <span className="terminal-header__location">Terminal 01</span>
+          {online ? (
+            <span className="pill pill--success">
+              <img src={dotSuccess} alt="" />
+              Terminal conectado
+            </span>
+          ) : (
+            <span className="pill pill--warning">
+              <img src={dotWarning} alt="" />
+              Sem conexão com o servidor
+            </span>
+          )}
+          <span className="terminal-header__location">{terminal.name}</span>
         </div>
       </header>
 
