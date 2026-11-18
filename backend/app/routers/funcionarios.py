@@ -263,6 +263,18 @@ def get_employee(matricula: str, request: Request, session: SessionDep):
     return employee_detail_out(get_or_404(session, matricula), request)
 
 
+@router.delete("/{matricula}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_employee(matricula: str, session: SessionDep):
+    """Exclui o funcionário, seus registros de ponto, dados faciais e foto."""
+    funcionario = get_or_404(session, matricula)
+    foto = funcionario.foto_arquivo
+    session.delete(funcionario)
+    session.commit()
+    if foto:
+        (PHOTOS_DIR / foto).unlink(missing_ok=True)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @router.get("/{matricula}/foto", name="employee_photo")
 def employee_photo(matricula: str, session: SessionDep):
     funcionario = get_or_404(session, matricula)
