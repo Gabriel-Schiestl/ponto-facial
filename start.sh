@@ -118,4 +118,8 @@ done
 ((i < 30)) || fail "O frontend não conseguiu falar com o backend pelo proxy /api."
 log "Frontend ↔ backend OK. Acesse http://localhost:$FRONTEND_PORT/ponto ou /admin/funcionarios"
 
-wait -n "${PIDS[@]}"
+# Encerra tudo quando um dos serviços cair (sem `wait -n`, que não existe no bash 3.2 do macOS).
+while kill -0 "${PIDS[0]}" 2>/dev/null && kill -0 "${PIDS[1]}" 2>/dev/null; do
+  sleep 2
+done
+log "Um dos serviços encerrou; finalizando."

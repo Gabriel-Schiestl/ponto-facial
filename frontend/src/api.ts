@@ -101,7 +101,10 @@ export const getEmployeeTotals = (signal?: AbortSignal) =>
 export const createEmployee = (form: FormData) =>
   request<Employee>('/api/funcionarios', { method: 'POST', body: form })
 
-export const validateFace = (image: Blob) =>
+export const deleteEmployee = (matricula: string) =>
+  request<void>(`/api/funcionarios/${encodeURIComponent(matricula)}`, { method: 'DELETE' })
+
+export const validateFace =(image: Blob) =>
   request<FaceValidation>('/api/funcionarios/face/validar', {
     method: 'POST',
     body: imageForm({ imagem: image }),
