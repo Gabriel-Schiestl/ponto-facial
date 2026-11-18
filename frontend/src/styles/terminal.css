@@ -17,6 +17,16 @@
   gap: 10px;
 }
 
+.brand--link {
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.brand--link:hover .brand__name {
+  color: var(--color-primary);
+}
+
 .brand__symbol {
   display: flex;
   align-items: center;

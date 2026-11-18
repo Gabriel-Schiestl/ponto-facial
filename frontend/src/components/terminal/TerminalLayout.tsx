@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { terminal } from '../../config/terminal'
 import { formatTime, formatWeekdayDate, useNow } from '../../hooks/useNow'
 import scanFaceBrand from '../../assets/icons/scan-face-brand.svg'
@@ -28,12 +29,17 @@ export default function TerminalLayout({
     <div className="terminal">
       <header className="terminal-header">
         <div className="terminal-header__product">
-          <div className="brand">
+          <Link
+            to="/admin"
+            className="brand brand--link focus-ring"
+            aria-label="ponto — voltar ao painel administrativo"
+            title="Voltar ao painel administrativo"
+          >
             <span className="brand__symbol">
               <img src={scanFaceBrand} alt="" />
             </span>
             <span className="brand__name">ponto</span>
-          </div>
+          </Link>
           <span className="divider divider--vertical" />
           <div className="terminal-header__unit">
             <p className="terminal-header__company">Horizonte Tecnologia</p>
