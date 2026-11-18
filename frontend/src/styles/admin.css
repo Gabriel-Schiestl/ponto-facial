@@ -869,3 +869,49 @@ button.pagination__page:hover {
 .table--punches .table__row {
   grid-template-columns: minmax(0, 1fr) 190px 110px 150px 170px;
 }
+
+/* Confirmação de exclusão */
+
+.confirm-dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(18, 45, 58, 0.45);
+}
+
+.confirm-dialog__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.confirm-dialog__text {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.button--danger {
+  border-color: #b4372f;
+  background: #b4372f;
+  color: #fff;
+}
+
+.button--danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

@@ -1,7 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getEmployeeTotals, listEmployees, type EmployeePage, type EmployeeTotals } from '../../api'
-import { departments } from '../../data/employees'
+import {
+  deleteEmployee,
+  getEmployeeTotals,
+  listEmployees,
+  type EmployeePage,
+  type EmployeeTotals,
+} from '../../api'
+import { departments, type Employee } from '../../data/employees'
 import Avatar from '../../components/Avatar'
 import plusIcon from '../../assets/icons/plus.svg'
 import usersIcon from '../../assets/icons/users.svg'
@@ -61,6 +67,40 @@ export default function Funcionarios() {
   const [result, setResult] = useState<EmployeePage | null>(null)
   const [totals, setTotals] = useState<EmployeeTotals | null>(null)
   const [error, setError] = useState('')
+  // Incrementado após uma exclusão para recarregar lista e indicadores.
+  const [version, setVersion] = useState(0)
+  const [toDelete, setToDelete] = useState<Employee | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+  const dialog = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    if (toDelete) dialog.current?.showModal()
+    else dialog.current?.close()
+  }, [toDelete])
+
+  const closeDelete = () => {
+    if (deleting) return
+    setToDelete(null)
+    setDeleteError('')
+  }
+
+  const confirmDelete = async () => {
+    if (!toDelete) return
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await deleteEmployee(toDelete.id)
+      // Se era o último item da página, volta uma página.
+      if (visible.length === 1 && page > 1) setPage(page - 1)
+      setToDelete(null)
+      setVersion((value) => value + 1)
+    } catch (reason) {
+      setDeleteError(reason instanceof Error ? reason.message : 'Não foi possível excluir.')
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   useEffect(() => {
     const id = window.setTimeout(() => setSearch(query.trim()), SEARCH_DELAY_MS)
@@ -73,7 +113,7 @@ export default function Funcionarios() {
       .then(setTotals)
       .catch(() => {})
     return () => controller.abort()
-  }, [])
+  }, [version])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -89,7 +129,7 @@ export default function Funcionarios() {
         if (!controller.signal.aborted) setError(reason.message)
       })
     return () => controller.abort()
-  }, [search, department, status, page])
+  }, [search, department, status, page, version])
 
   // Qualquer mudança de filtro volta para a primeira página.
   const changeFilter = (setter: (value: string) => void) => (value: string) => {
@@ -231,7 +271,9 @@ export default function Funcionarios() {
                 <button
                   type="button"
                   className="icon-button focus-ring"
-                  aria-label={`Editar cadastro de ${employee.name}`}
+                  aria-label={`Excluir cadastro de ${employee.name}`}
+                  title="Excluir funcionário"
+                  onClick={() => setToDelete(employee)}
                 >
                   <img src={ellipsisIcon} alt="" />
                 </button>
@@ -300,6 +342,38 @@ export default function Funcionarios() {
         Uma foto de cadastro não ativa a identificação facial. Configure e valide a face de cada
         funcionário.
       </p>
+
+      <dialog
+        ref={dialog}
+        className="confirm-dialog"
+        aria-labelledby="confirm-dialog-title"
+        onCancel={(event) => {
+          event.preventDefault()
+          closeDelete()
+        }}
+      >
+        <h2 id="confirm-dialog-title" className="confirm-dialog__title">
+          Excluir funcionário?
+        </h2>
+        <p className="confirm-dialog__text">
+          <strong>{toDelete?.name}</strong> ({toDelete?.id}) será removido junto com a foto, os
+          dados faciais e todos os registros de ponto. Essa ação não pode ser desfeita.
+        </p>
+        {deleteError && <p className="form-error">{deleteError}</p>}
+        <div className="confirm-dialog__actions">
+          <button type="button" className="button" onClick={closeDelete} disabled={deleting}>
+            Cancelar
+          </button>
+          <button
+            type="button"
+            className="button button--danger"
+            onClick={confirmDelete}
+            disabled={deleting}
+          >
+            {deleting ? 'Excluindo…' : 'Excluir'}
+          </button>
+        </div>
+      </dialog>
     </main>
   )
 }
